@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import requests
@@ -8,20 +6,21 @@ class PaymentAcquirerSadad(models.Model):
     _inherit = 'payment.acquirer'
 
     provider = fields.Selection(selection_add=[('sadad', 'Sadad')])
-    sadad_merchant_id = fields.Char('Sadad Merchant ID', required_if_provider='sadad')
-    sadad_terminal_id = fields.Char('Sadad Terminal ID', required_if_provider='sadad')
+    sadad_merchant_id = fields.str('sadadId', required_if_provider='sadad')
+    sadad_terminal_id = fields.int('secretKey', required_if_provider='sadad')
+    sadad_merchant_id = fields.str('domain', required_if_provider='sadad')
     sadad_username = fields.Char('Sadad Username', required_if_provider='sadad')
     sadad_password = fields.Char('Sadad Password', required_if_provider='sadad')
 
     def sadad_form_generate_values(self, values):
         self.ensure_one()
         sadad_tx_values = dict(values)
-        # You may need to adjust this based on your Sadad requirements
-        # For example, you might need to pass customer details, invoice information, etc.
+        # Pass the values as per doc
+        
         sadad_tx_values.update({
-            'amount': values['amount'],
-            'currency': values['currency'].name,
-            # Add more parameters as required by Sadad
+            'clientname': values['name'].name,
+            'amount': values['amount'].name,
+           # remaining values to be parsed as per doc
         })
         return sadad_tx_values
 
@@ -41,8 +40,8 @@ class PaymentTransactionSadad(models.Model):
     def _sadad_form_get_invalid_parameters(self, data):
         invalid_parameters = []
 
-        # Add your validation logic here based on the response from Sadad
-        # For example, you might check for required parameters, transaction status, etc.
+        # validation logic to be added based on the response from Sadad
+        
 
         return invalid_parameters
 
@@ -73,7 +72,6 @@ class PaymentControllerSadad(models.AbstractModel):
 
     @api.model
     def _sadad_form_validate(self, data):
-        # Call Sadad API here to validate the payment response
-        # You may need to parse and validate the data received from Sadad
+        # call API validations
         # and return True if the payment is successful, otherwise return False
         return True
